@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Property & Casualty Insurance practice quizzes — 5 chapters plus a timed final exam." />
+<title>P&amp;C Insurance — Practice Quizzes</title>
+<style>
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --accent: 221 83% 53%;
+    --ring: 240 5% 65%;
+    --success: 142 71% 45%;
+    --success-foreground: 142 76% 24%;
+    --success-bg: 138 76% 97%;
+    --success-border: 142 69% 80%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 74% 31%;
+    --destructive-bg: 0 86% 97%;
+    --destructive-border: 0 80% 87%;
+    --radius: 0.7rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 240 10% 3.9%;
+      --foreground: 0 0% 98%;
+      --card: 240 10% 5.9%;
+      --muted: 240 3.7% 15.9%;
+      --muted-foreground: 240 5% 64.9%;
+      --border: 240 3.7% 18%;
+      --input: 240 3.7% 18%;
+      --primary: 0 0% 98%;
+      --primary-foreground: 240 5.9% 10%;
+      --accent: 217 91% 60%;
+      --ring: 240 4.9% 50%;
+      --success-foreground: 142 70% 70%;
+      --success-bg: 144 61% 10%;
+      --success-border: 142 60% 24%;
+      --destructive-foreground: 0 90% 80%;
+      --destructive-bg: 0 63% 12%;
+      --destructive-border: 0 60% 28%;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Inter", sans-serif;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    font-size: 15px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 28px 18px 56px; }
+  .hidden { display: none !important; }
+
+  h1 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; }
+  .subtitle { color: hsl(var(--muted-foreground)); margin: 0; font-size: 0.98rem; }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font: inherit; font-size: 0.95rem; font-weight: 600;
+    border-radius: calc(var(--radius) - 2px); padding: 11px 20px;
+    cursor: pointer; border: 1px solid transparent; user-select: none;
+    transition: background-color .15s ease, border-color .15s ease, opacity .15s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+  .btn-primary { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
+  .btn-primary:hover { background: hsl(var(--primary) / .9); }
+  .btn-outline { background: transparent; border-color: hsl(var(--border)); color: hsl(var(--foreground)); }
+  .btn-outline:hover { background: hsl(var(--muted)); }
+  .btn-ghost { background: transparent; color: hsl(var(--muted-foreground)); padding: 7px 12px; font-size: 0.85rem; }
+  .btn-ghost:hover { background: hsl(var(--muted)); color: hsl(var(--foreground)); }
+  .btn-lg { padding: 13px 26px; font-size: 1rem; }
+
+  /* ---------- Home ---------- */
+  .home-header { margin-bottom: 22px; }
+  .section-label {
+    font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    color: hsl(var(--muted-foreground)); margin: 26px 2px 12px;
+  }
+  .overall {
+    display: flex; align-items: center; gap: 12px; margin-top: 14px;
+    font-size: 0.85rem; color: hsl(var(--muted-foreground));
+  }
+  .overall .progress { flex: 1; }
+
+  .chapter-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px;
+  }
+  .card {
+    background: hsl(var(--card)); border: 1px solid hsl(var(--border));
+    border-radius: var(--radius); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  }
+  .chapter-card {
+    text-align: left; font: inherit; color: inherit; cursor: pointer;
+    padding: 16px; display: flex; flex-direction: column; gap: 10px;
+    transition: border-color .15s ease, transform .05s ease, box-shadow .15s ease;
+  }
+  .chapter-card:hover { border-color: hsl(var(--ring)); box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.08); }
+  .chapter-card:active { transform: translateY(1px); }
+  .chapter-card:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+  .cc-head { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }
+  .cc-title { font-weight: 700; font-size: 1.02rem; }
+  .cc-count { font-size: 0.76rem; color: hsl(var(--muted-foreground)); }
+  .cc-foot { display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; }
+  .cc-status { color: hsl(var(--muted-foreground)); }
+  .cc-status.done { color: hsl(var(--success-foreground)); font-weight: 600; }
+  .cc-pct { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .progress { height: 6px; width: 100%; background: hsl(var(--muted)); border-radius: 9999px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: hsl(var(--primary)); border-radius: 9999px; transition: width .35s ease; }
+  .progress-fill.done { background: hsl(var(--success)); }
+
+  .final-card {
+    width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer;
+    margin-top: 12px; padding: 20px 22px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    border: 1.5px solid hsl(var(--primary) / .9);
+    transition: transform .05s ease, box-shadow .15s ease;
+  }
+  .final-card:hover { box-shadow: 0 6px 18px -4px rgb(0 0 0 / 0.12); }
+  .final-card:active { transform: translateY(1px); }
+  .final-card:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+  .final-card:disabled { opacity: .55; cursor: not-allowed; }
+  .final-card:disabled:hover { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.04); transform: none; }
+  .weakness-card { border-color: hsl(var(--destructive) / .55); }
+  .badge-destructive { color: hsl(var(--destructive-foreground)); background: hsl(var(--destructive-bg)); border-color: hsl(var(--destructive-border)); }
+  .final-title { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.01em; margin: 8px 0 3px; }
+  .final-sub { font-size: 0.85rem; color: hsl(var(--muted-foreground)); }
+  .final-card-side { text-align: center; flex: 0 0 auto; }
+  .final-best { display: block; font-size: 1.5rem; font-weight: 800; line-height: 1; }
+  .final-best-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: hsl(var(--muted-foreground)); }
+
+  .badge {
+    display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    color: hsl(var(--muted-foreground)); background: hsl(var(--muted)); border: 1px solid hsl(var(--border));
+    padding: 4px 10px; border-radius: 9999px;
+  }
+  .badge-accent { color: hsl(var(--accent)); background: hsl(var(--accent) / .1); border-color: hsl(var(--accent) / .25); }
+
+  .home-footer {
+    margin-top: 34px; padding-top: 20px; border-top: 1px solid hsl(var(--border));
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+
+  /* ---------- Quiz top bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 10;
+    background: hsl(var(--background) / .85); backdrop-filter: saturate(180%) blur(8px);
+    border-bottom: 1px solid hsl(var(--border));
+  }
+  .topbar-inner { max-width: 720px; margin: 0 auto; padding: 12px 18px 11px; }
+  .topbar-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+  .counter { font-size: 0.82rem; font-weight: 600; color: hsl(var(--muted-foreground)); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .timer {
+    font-variant-numeric: tabular-nums; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.02em;
+    padding: 4px 10px; border: 1px solid hsl(var(--border)); border-radius: 9999px; white-space: nowrap;
+  }
+  .timer.warning { color: hsl(var(--destructive-foreground)); border-color: hsl(var(--destructive-border)); background: hsl(var(--destructive-bg)); }
+
+  /* ---------- Question card ---------- */
+  .quiz-card { padding: 26px; margin-top: 0; }
+  .question { font-size: 1.16rem; font-weight: 700; line-height: 1.4; letter-spacing: -0.01em; margin: 14px 0 20px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+    background: hsl(var(--card)); border: 1px solid hsl(var(--input)); border-radius: calc(var(--radius) - 3px);
+    padding: 13px 15px; font: inherit; font-size: 0.98rem; color: hsl(var(--foreground)); cursor: pointer;
+  }
+  .option:hover:not(:disabled) { border-color: hsl(var(--ring)); background: hsl(var(--muted) / .5); }
+  .option:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+  .option:disabled { cursor: default; }
+  .option .key {
+    flex: 0 0 auto; width: 26px; height: 26px; border-radius: 6px; border: 1px solid hsl(var(--border));
+    display: inline-flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700;
+    color: hsl(var(--muted-foreground)); background: hsl(var(--muted) / .5);
+  }
+  .option .label { flex: 1; }
+  .option .mark { flex: 0 0 auto; font-weight: 800; font-size: 1.05rem; opacity: 0; }
+  .option.correct { border-color: hsl(var(--success-border)); background: hsl(var(--success-bg)); color: hsl(var(--success-foreground)); }
+  .option.correct .key { border-color: hsl(var(--success-border)); background: hsl(var(--success) / .18); color: hsl(var(--success-foreground)); }
+  .option.correct .mark { opacity: 1; color: hsl(var(--success)); }
+  .option.incorrect { border-color: hsl(var(--destructive-border)); background: hsl(var(--destructive-bg)); color: hsl(var(--destructive-foreground)); }
+  .option.incorrect .key { border-color: hsl(var(--destructive-border)); background: hsl(var(--destructive) / .15); color: hsl(var(--destructive-foreground)); }
+  .option.incorrect .mark { opacity: 1; color: hsl(var(--destructive)); }
+  .option.dim { opacity: 0.55; }
+
+  .explanation { margin-top: 18px; border-radius: calc(var(--radius) - 3px); padding: 15px 16px; font-size: 0.92rem; border: 1px solid hsl(var(--border)); display: none; }
+  .explanation.show { display: block; }
+  .explanation.ok { background: hsl(var(--success-bg)); border-color: hsl(var(--success-border)); color: hsl(var(--success-foreground)); }
+  .explanation.no { background: hsl(var(--destructive-bg)); border-color: hsl(var(--destructive-border)); color: hsl(var(--destructive-foreground)); }
+  .verdict { font-weight: 800; margin-bottom: 4px; }
+  .footer-actions { display: flex; justify-content: flex-end; align-items: center; margin-top: 20px; min-height: 42px; }
+  .next-hint { margin-right: auto; font-size: 0.78rem; color: hsl(var(--muted-foreground)); }
+  kbd { font-family: ui-monospace, Menlo, monospace; font-size: 0.72rem; border: 1px solid hsl(var(--border)); border-bottom-width: 2px; border-radius: 5px; padding: 1px 5px; background: hsl(var(--muted)); }
+
+  /* ---------- Results ---------- */
+  .hero { min-height: calc(100vh - 56px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .hero .card { width: 100%; padding: 36px 28px; }
+  .score-ring { width: 160px; height: 160px; margin: 14px auto 16px; border-radius: 50%; display: grid; place-items: center;
+    background: conic-gradient(hsl(var(--ring-color, var(--primary))) calc(var(--pct,0) * 1%), hsl(var(--muted)) 0); }
+  .score-ring-inner { width: 126px; height: 126px; border-radius: 50%; background: hsl(var(--card)); display: grid; place-items: center; }
+  .score-pct { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; }
+  .verdict-tag { display: inline-block; font-size: 0.8rem; font-weight: 700; padding: 5px 14px; border-radius: 9999px; margin-bottom: 14px; }
+  .verdict-tag.pass { color: hsl(var(--success-foreground)); background: hsl(var(--success-bg)); border: 1px solid hsl(var(--success-border)); }
+  .verdict-tag.fail { color: hsl(var(--destructive-foreground)); background: hsl(var(--destructive-bg)); border: 1px solid hsl(var(--destructive-border)); }
+  .result-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 22px 0; }
+  .stat { border: 1px solid hsl(var(--border)); border-radius: calc(var(--radius) - 2px); padding: 14px 8px; }
+  .stat-num { font-size: 1.3rem; font-weight: 800; display: block; }
+  .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: hsl(var(--muted-foreground)); margin-top: 2px; }
+  .result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 18px 14px 44px; }
+    .quiz-card { padding: 18px; }
+    h1 { font-size: 1.45rem; }
+    .question { font-size: 1.06rem; }
+    .final-card { flex-direction: row; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== HOME ===================== -->
+<div id="home" class="wrap">
+  <header class="home-header">
+    <h1>Property &amp; Casualty Insurance</h1>
+    <p class="subtitle">Practice by chapter, then take the timed final exam.</p>
+    <div class="overall">
+      <span id="overall-label">0% overall</span>
+      <div class="progress"><div class="progress-fill" id="overall-fill"></div></div>
+    </div>
+  </header>
+
+  <div class="section-label">Practice by chapter</div>
+  <div id="chapter-grid" class="chapter-grid"></div>
+
+  <div class="section-label">Weakness practice</div>
+  <button id="weakness-card" class="card final-card weakness-card" type="button">
+    <div class="final-card-main">
+      <span class="badge badge-destructive">Weakness Test</span>
+      <div class="final-title" id="weakness-title">No weaknesses recorded yet</div>
+      <div class="final-sub" id="weakness-sub">Wrong answers from any quiz will appear here for targeted practice.</div>
+    </div>
+    <div class="final-card-side">
+      <span class="final-best" id="weakness-count">0</span>
+      <span class="final-best-label">to review</span>
+    </div>
+  </button>
+
+  <div class="section-label">Exam</div>
+  <button id="final-card" class="card final-card" type="button">
+    <div class="final-card-main">
+      <span class="badge badge-accent">Final Exam</span>
+      <div class="final-title">150 questions &middot; 180 minutes</div>
+      <div class="final-sub">Randomly mixed from every chapter &middot; timed &middot; instant feedback</div>
+    </div>
+    <div class="final-card-side">
+      <span class="final-best" id="final-best">&mdash;</span>
+      <span class="final-best-label">best score</span>
+    </div>
+  </button>
+
+  <footer class="home-footer">
+    <a class="btn btn-outline" href="book_quiz.pdf" target="_blank" rel="noopener">📖 Open the question book (PDF)</a>
+    <button id="reset-btn" class="btn btn-ghost" type="button">Reset progress</button>
+  </footer>
+</div>
+
+<!-- ===================== QUIZ ===================== -->
+<div id="quiz" class="hidden">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-row">
+        <button id="exit-btn" class="btn btn-ghost" type="button">‹ Back</button>
+        <span class="counter" id="counter"></span>
+        <div class="topbar-right">
+          <span class="timer hidden" id="timer"></span>
+        </div>
+      </div>
+      <div class="progress"><div class="progress-fill" id="quiz-progress"></div></div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="card quiz-card">
+      <span class="badge" id="badge"></span>
+      <p class="question" id="question"></p>
+      <div class="options" id="options"></div>
+      <div class="explanation" id="explanation">
+        <div class="verdict" id="verdict"></div>
+        <div id="explanation-text"></div>
+      </div>
+      <div class="footer-actions">
+        <span class="next-hint hidden" id="next-hint">Press <kbd>Enter</kbd> for next</span>
+        <button class="btn btn-primary hidden" id="next-btn">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== RESULTS ===================== -->
+<div id="results" class="wrap hero hidden">
+  <div class="card">
+    <span class="badge" id="r-badge"></span>
+    <h1 id="r-title" style="margin-top:12px;"></h1>
+    <p class="subtitle" id="r-sub"></p>
+    <div class="score-ring" id="r-ring"><div class="score-ring-inner"><span class="score-pct" id="r-pct">0%</span></div></div>
+    <div id="r-verdict" class="verdict-tag hidden"></div>
+    <div class="result-stats" id="r-stats"></div>
+    <div class="result-actions">
+      <button class="btn btn-primary btn-lg" id="r-retry">Try again</button>
+      <button class="btn btn-outline btn-lg" id="r-home">Back to menu</button>
+    </div>
+  </div>
+</div>
+
+<script src="quiz-data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var DATA = window.QUIZ_DATA || { chapters: [] };
+  var CHAPTERS = DATA.chapters || [];
+
+  function keyOf(s) { return (s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
+
+  // Final-exam pool: every question across chapters, de-duplicated by text.
+  // BY_KEY: lookup from normalized question text back to the question object.
+  var POOL = [];
+  var BY_KEY = {};
+  (function () {
+    var seen = {};
+    CHAPTERS.forEach(function (c) {
+      c.questions.forEach(function (q) {
+        var k = keyOf(q.q);
+        if (!BY_KEY[k]) BY_KEY[k] = q;
+        if (seen[k]) return;
+        seen[k] = 1;
+        POOL.push(q);
+      });
+    });
+  })();
+
+  var FINAL = { COUNT: 150, TIME: 180 * 60, PASS: 70, WARN: 5 * 60 };
+  var PKEY = "pc_quiz_v1";
+
+  // ---------- progress (localStorage) ----------
+  function loadP() { try { return JSON.parse(localStorage.getItem(PKEY)) || {}; } catch (e) { return {}; } }
+  function saveP(p) { try { localStorage.setItem(PKEY, JSON.stringify(p)); } catch (e) {} }
+  function chapProg(i) {
+    var p = loadP();
+    return (p.chapters && p.chapters[i]) || { done: 0, best: null, completed: false };
+  }
+  function setChapProg(i, upd) {
+    var p = loadP(); p.chapters = p.chapters || {};
+    p.chapters[i] = Object.assign({ done: 0, best: null, completed: false }, p.chapters[i] || {}, upd);
+    saveP(p);
+  }
+  function finalProg() { var p = loadP(); return p.final || { best: null }; }
+  function setFinalProg(upd) { var p = loadP(); p.final = Object.assign({ best: null }, p.final || {}, upd); saveP(p); }
+
+  // ---------- weakness tracking ----------
+  // A "weakness" is a question the user has gotten wrong more often than right.
+  // We store a count keyed by the normalized question text. Wrong answers increment,
+  // correct answers decrement; the question leaves the pool when the count hits 0.
+  function weakAll() { var p = loadP(); return p.weak || {}; }
+  function setWeakAll(w) { var p = loadP(); p.weak = w; saveP(p); }
+  function weakBest() { var p = loadP(); return p.weakBest != null ? p.weakBest : null; }
+  function setWeakBest(v) { var p = loadP(); p.weakBest = v; saveP(p); }
+
+  function bumpWrong(q) {
+    var w = weakAll(), k = keyOf(q.q);
+    w[k] = (w[k] || 0) + 1;
+    setWeakAll(w);
+  }
+  function bumpRight(q) {
+    var w = weakAll(), k = keyOf(q.q);
+    if (!w[k]) return;
+    w[k]--;
+    if (w[k] <= 0) delete w[k];
+    setWeakAll(w);
+  }
+  function weaknessQuestions() {
+    var w = weakAll(), out = [];
+    Object.keys(w).forEach(function (k) { if (BY_KEY[k]) out.push(BY_KEY[k]); });
+    return out;
+  }
+  function weaknessCount() { return Object.keys(weakAll()).length; }
+
+  // ---------- elements ----------
+  var $ = function (id) { return document.getElementById(id); };
+  var homeView = $("home"), quizView = $("quiz"), resultsView = $("results");
+  var elGrid = $("chapter-grid"), elFinalBest = $("final-best");
+  var elCounter = $("counter"), elTimer = $("timer"), elQuizProgress = $("quiz-progress");
+  var elBadge = $("badge"), elQuestion = $("question"), elOptions = $("options");
+  var elExpl = $("explanation"), elVerdict = $("verdict"), elExplText = $("explanation-text");
+  var elNext = $("next-btn"), elNextHint = $("next-hint"), elExit = $("exit-btn");
+
+  // ---------- session ----------
+  var S = null;
+
+  function show(view) {
+    homeView.classList.add("hidden");
+    quizView.classList.add("hidden");
+    resultsView.classList.add("hidden");
+    view.classList.remove("hidden");
+    window.scrollTo(0, 0);
+  }
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function fmtTime(s) {
+    if (s < 0) s = 0;
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+    var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+    return h > 0 ? h + ":" + pad(m) + ":" + pad(sec) : m + ":" + pad(sec);
+  }
+  function esc(s) { var d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; }
+
+  // ---------- HOME ----------
+  function renderHome() {
+    var totalDone = 0, totalQ = 0;
+    elGrid.innerHTML = CHAPTERS.map(function (c, i) {
+      var pr = chapProg(i);
+      var pct = c.count ? Math.round((pr.done / c.count) * 100) : 0;
+      totalDone += Math.min(pr.done, c.count); totalQ += c.count;
+      var status, cls = "", fillCls = "";
+      if (pr.completed) { status = "Completed · best " + (pr.best != null ? pr.best + "%" : "—"); cls = " done"; fillCls = " done"; }
+      else if (pr.done > 0) { status = "In progress"; }
+      else { status = "Not started"; }
+      return (
+        '<button class="card chapter-card" type="button" data-i="' + i + '">' +
+          '<div class="cc-head"><span class="cc-title">' + esc(c.title) + '</span>' +
+          '<span class="cc-count">' + c.count + ' questions</span></div>' +
+          '<div class="progress"><div class="progress-fill' + fillCls + '" style="width:' + pct + '%"></div></div>' +
+          '<div class="cc-foot"><span class="cc-status' + cls + '">' + status + '</span>' +
+          '<span class="cc-pct">' + pct + '%</span></div>' +
+        '</button>'
+      );
+    }).join("");
+    Array.prototype.forEach.call(elGrid.querySelectorAll(".chapter-card"), function (el) {
+      el.addEventListener("click", function () { startChapter(+el.getAttribute("data-i")); });
+    });
+
+    var fp = finalProg();
+    elFinalBest.innerHTML = fp.best != null ? fp.best + "%" : "&mdash;";
+
+    var weakN = weaknessCount();
+    var weakCard = $("weakness-card");
+    $("weakness-count").textContent = weakN;
+    if (weakN === 0) {
+      $("weakness-title").textContent = "No weaknesses recorded yet";
+      $("weakness-sub").textContent = "Wrong answers from any quiz will appear here for targeted practice.";
+      weakCard.disabled = true;
+    } else {
+      var wb = weakBest();
+      $("weakness-title").textContent = weakN + " question" + (weakN === 1 ? "" : "s") + " · untimed";
+      $("weakness-sub").textContent = "Drawn from your mistakes across all quizzes." + (wb != null ? " Best: " + wb + "%." : "");
+      weakCard.disabled = false;
+    }
+
+    var overall = totalQ ? Math.round((totalDone / totalQ) * 100) : 0;
+    $("overall-fill").style.width = overall + "%";
+    $("overall-label").textContent = overall + "% overall";
+
+    show(homeView);
+  }
+
+  // ---------- START QUIZZES ----------
+  function startChapter(i) {
+    var chap = CHAPTERS[i];
+    S = {
+      mode: "chapter", chapterIndex: i, title: chap.title,
+      questions: chap.questions.slice(), // keep book order
+      idx: 0, correct: 0, answered: 0, answeredNow: false,
+      timed: false, finished: false,
+    };
+    elExit.textContent = "‹ Chapters";
+    elTimer.classList.add("hidden");
+    show(quizView);
+    renderQuestion();
+  }
+
+  function startFinal() {
+    var n = Math.min(FINAL.COUNT, POOL.length);
+    S = {
+      mode: "final", title: "Final Exam",
+      questions: shuffle(POOL).slice(0, n),
+      idx: 0, correct: 0, answered: 0, answeredNow: false,
+      timed: true, remaining: FINAL.TIME, timerId: null, finished: false,
+    };
+    elExit.textContent = "‹ Exit exam";
+    elTimer.classList.remove("hidden");
+    show(quizView);
+    renderQuestion();
+    startTimer();
+    window.addEventListener("beforeunload", beforeUnload);
+  }
+
+  function startWeakness() {
+    var qs = weaknessQuestions();
+    if (!qs.length) return;
+    S = {
+      mode: "weakness", title: "Weakness Test",
+      questions: shuffle(qs),
+      idx: 0, correct: 0, answered: 0, answeredNow: false,
+      timed: false, finished: false,
+    };
+    elExit.textContent = "‹ Back";
+    elTimer.classList.add("hidden");
+    show(quizView);
+    renderQuestion();
+  }
+
+  function startTimer() {
+    renderTimer();
+    S.timerId = setInterval(function () {
+      S.remaining--;
+      renderTimer();
+      if (S.remaining <= 0) finish(true);
+    }, 1000);
+  }
+  function renderTimer() {
+    elTimer.textContent = fmtTime(S.remaining);
+    elTimer.classList.toggle("warning", S.remaining <= FINAL.WARN);
+  }
+
+  // ---------- QUESTION ----------
+  function renderQuestion() {
+    S.answeredNow = false;
+    var q = S.questions[S.idx];
+    elCounter.textContent = (S.mode === "final" ? "Question " : S.title + " · Q ") + (S.idx + 1) + " / " + S.questions.length;
+    elQuizProgress.style.width = (S.idx / S.questions.length) * 100 + "%";
+    elBadge.textContent = q.cat || "Question";
+    elQuestion.textContent = q.q;
+    elExpl.className = "explanation";
+    elNext.classList.add("hidden");
+    elNextHint.classList.add("hidden");
+
+    elOptions.innerHTML = "";
+    Object.keys(q.options).sort().forEach(function (key) {
+      var btn = document.createElement("button");
+      btn.className = "option"; btn.type = "button"; btn.setAttribute("data-key", key);
+      btn.innerHTML = '<span class="key">' + esc(key) + '</span><span class="label">' + esc(q.options[key]) + '</span><span class="mark"></span>';
+      btn.addEventListener("click", function () { selectAnswer(key); });
+      elOptions.appendChild(btn);
+    });
+  }
+
+  function selectAnswer(chosen) {
+    if (S.answeredNow) return;
+    S.answeredNow = true; S.answered++;
+    var q = S.questions[S.idx];
+    var isCorrect = chosen === q.correct;
+    if (isCorrect) { S.correct++; bumpRight(q); }
+    else { bumpWrong(q); }
+
+    Array.prototype.forEach.call(elOptions.querySelectorAll(".option"), function (btn) {
+      btn.disabled = true;
+      var key = btn.getAttribute("data-key");
+      var mark = btn.querySelector(".mark");
+      if (key === q.correct) { btn.classList.add("correct"); mark.textContent = "✓"; }
+      else if (key === chosen) { btn.classList.add("incorrect"); mark.textContent = "✗"; }
+      else { btn.classList.add("dim"); }
+    });
+
+    elExpl.classList.add("show", isCorrect ? "ok" : "no");
+    elVerdict.textContent = isCorrect ? "✓ Correct" : "✗ Incorrect";
+    elExplText.textContent = q.exp || "";
+
+    if (S.mode === "chapter") {
+      var pr = chapProg(S.chapterIndex);
+      setChapProg(S.chapterIndex, { done: Math.max(pr.done || 0, S.answered) });
+    }
+
+    var last = S.idx === S.questions.length - 1;
+    elNext.textContent = last ? "See results" : "Next";
+    elNext.classList.remove("hidden");
+    elNextHint.classList.remove("hidden");
+    elNext.focus();
+  }
+
+  function next() {
+    if (!S.answeredNow) return;
+    if (S.idx === S.questions.length - 1) { finish(false); return; }
+    S.idx++;
+    renderQuestion();
+    window.scrollTo(0, 0);
+  }
+
+  function finish(timeUp) {
+    if (S.finished) return;
+    S.finished = true;
+    if (S.timerId) clearInterval(S.timerId);
+    window.removeEventListener("beforeunload", beforeUnload);
+
+    var total = S.questions.length;
+    var pct = total ? Math.round((S.correct / total) * 100) : 0;
+
+    if (S.mode === "chapter") {
+      var pr = chapProg(S.chapterIndex);
+      var done = S.answered >= total ? total : Math.max(pr.done || 0, S.answered);
+      setChapProg(S.chapterIndex, {
+        done: done,
+        completed: S.answered >= total ? true : pr.completed,
+        best: S.answered >= total ? Math.max(pr.best || 0, pct) : pr.best,
+      });
+    } else if (S.mode === "weakness") {
+      if (S.answered >= total) setWeakBest(Math.max(weakBest() || 0, pct));
+    } else {
+      var fp = finalProg();
+      setFinalProg({ best: Math.max(fp.best || 0, pct), last: pct });
+    }
+    renderResults(pct, total, timeUp);
+  }
+
+  function renderResults(pct, total, timeUp) {
+    var isFinal = S.mode === "final";
+    var isWeak = S.mode === "weakness";
+    var pass = pct >= FINAL.PASS;
+    var remainingWeak = weaknessCount();
+
+    $("r-badge").textContent = isFinal ? "Final Exam" : (isWeak ? "Weakness Test" : S.title);
+    $("r-title").textContent = isFinal ? "Exam complete" : (isWeak ? "Weakness Test complete" : S.title + " complete");
+    $("r-sub").textContent = timeUp
+      ? "Time's up — you answered " + S.answered + " of " + total + "."
+      : (isWeak
+          ? "You scored " + S.correct + " out of " + total + " correct. " + remainingWeak + " weakness" + (remainingWeak === 1 ? "" : "es") + " left to review."
+          : "You scored " + S.correct + " out of " + total + " correct.");
+
+    $("r-pct").textContent = pct + "%";
+    var ring = $("r-ring");
+    ring.style.setProperty("--pct", pct);
+    ring.style.setProperty("--ring-color", pass ? "var(--success)" : (isFinal ? "var(--destructive)" : "var(--primary)"));
+
+    var verdict = $("r-verdict");
+    if (isFinal) {
+      verdict.className = "verdict-tag " + (pass ? "pass" : "fail");
+      verdict.textContent = pass ? "Passed (≥ 70%)" : "Below passing (70%)";
+    } else if (isWeak && remainingWeak === 0) {
+      verdict.className = "verdict-tag pass";
+      verdict.textContent = "All weaknesses cleared";
+    } else {
+      verdict.className = "verdict-tag hidden";
+    }
+
+    var stats;
+    if (isFinal) {
+      stats = [[S.correct, "Correct"], [S.answered + " / " + total, "Answered"], [fmtTime(FINAL.TIME - S.remaining), "Time used"]];
+    } else if (isWeak) {
+      stats = [[S.correct, "Correct"], [total - S.correct, "Missed"], [remainingWeak, "Still weak"]];
+    } else {
+      stats = [[S.correct, "Correct"], [total - S.correct, "Missed"], [total, "Questions"]];
+    }
+    $("r-stats").innerHTML = stats.map(function (s) {
+      return '<div class="stat"><span class="stat-num">' + s[0] + '</span><div class="stat-label">' + s[1] + '</div></div>';
+    }).join("");
+
+    if (isWeak) $("r-retry").textContent = remainingWeak ? "Retry weakness test" : "Back to menu";
+    else $("r-retry").textContent = isFinal ? "Retake exam" : "Retry chapter";
+    $("r-retry").disabled = isWeak && remainingWeak === 0;
+    show(resultsView);
+  }
+
+  function exitQuiz() {
+    if (S && S.mode === "final" && !S.finished) {
+      if (!confirm("Leave the exam? Your progress in this attempt will be lost.")) return;
+      if (S.timerId) clearInterval(S.timerId);
+      window.removeEventListener("beforeunload", beforeUnload);
+    }
+    if (S) S.finished = true;
+    renderHome();
+  }
+
+  function beforeUnload(e) { if (S && !S.finished) { e.preventDefault(); e.returnValue = ""; return ""; } }
+
+  // ---------- keyboard ----------
+  document.addEventListener("keydown", function (e) {
+    if (quizView.classList.contains("hidden")) return;
+    if (!S.answeredNow) {
+      var map = { a: 0, b: 1, c: 2, d: 3, "1": 0, "2": 1, "3": 2, "4": 3 };
+      var k = e.key.toLowerCase();
+      if (k in map) {
+        var btns = elOptions.querySelectorAll(".option");
+        if (btns[map[k]]) { e.preventDefault(); btns[map[k]].click(); }
+      }
+    } else if (e.key === "Enter" || e.key === "ArrowRight") {
+      e.preventDefault(); next();
+    }
+  });
+
+  // ---------- wire up ----------
+  elNext.addEventListener("click", next);
+  elExit.addEventListener("click", exitQuiz);
+  $("final-card").addEventListener("click", startFinal);
+  $("weakness-card").addEventListener("click", function () {
+    if (!this.disabled) startWeakness();
+  });
+  $("r-home").addEventListener("click", renderHome);
+  $("r-retry").addEventListener("click", function () {
+    if (S.mode === "final") startFinal();
+    else if (S.mode === "weakness") {
+      if (weaknessCount() > 0) startWeakness();
+      else renderHome();
+    }
+    else startChapter(S.chapterIndex);
+  });
+  $("reset-btn").addEventListener("click", function () {
+    if (confirm("Reset all saved progress and best scores?")) { saveP({}); renderHome(); }
+  });
+
+  // ---------- init ----------
+  if (!CHAPTERS.length) {
+    elGrid.innerHTML = '<p class="subtitle">Could not load quiz-data.js.</p>';
+  } else {
+    renderHome();
+  }
+})();
+</script>
+</body>
+</html>
