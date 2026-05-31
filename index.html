@@ -133,6 +133,10 @@
   .final-card:hover { box-shadow: 0 6px 18px -4px rgb(0 0 0 / 0.12); }
   .final-card:active { transform: translateY(1px); }
   .final-card:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+  .final-card:disabled { opacity: .55; cursor: not-allowed; }
+  .final-card:disabled:hover { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.04); transform: none; }
+  .weakness-card { border-color: hsl(var(--destructive) / .55); }
+  .badge-destructive { color: hsl(var(--destructive-foreground)); background: hsl(var(--destructive-bg)); border-color: hsl(var(--destructive-border)); }
   .final-title { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.01em; margin: 8px 0 3px; }
   .final-sub { font-size: 0.85rem; color: hsl(var(--muted-foreground)); }
   .final-card-side { text-align: center; flex: 0 0 auto; }
@@ -244,6 +248,19 @@
   <div class="section-label">Practice by chapter</div>
   <div id="chapter-grid" class="chapter-grid"></div>
 
+  <div class="section-label">Weakness practice</div>
+  <button id="weakness-card" class="card final-card weakness-card" type="button">
+    <div class="final-card-main">
+      <span class="badge badge-destructive">Weakness Test</span>
+      <div class="final-title" id="weakness-title">No weaknesses recorded yet</div>
+      <div class="final-sub" id="weakness-sub">Wrong answers from any quiz will appear here for targeted practice.</div>
+    </div>
+    <div class="final-card-side">
+      <span class="final-best" id="weakness-count">0</span>
+      <span class="final-best-label">to review</span>
+    </div>
+  </button>
+
   <div class="section-label">Exam</div>
   <button id="final-card" class="card final-card" type="button">
     <div class="final-card-main">
@@ -318,18 +335,23 @@
   var DATA = window.QUIZ_DATA || { chapters: [] };
   var CHAPTERS = DATA.chapters || [];
 
+  function keyOf(s) { return (s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
+
   // Final-exam pool: every question across chapters, de-duplicated by text.
-  var POOL = (function () {
-    var seen = {}, pool = [];
+  // BY_KEY: lookup from normalized question text back to the question object.
+  var POOL = [];
+  var BY_KEY = {};
+  (function () {
+    var seen = {};
     CHAPTERS.forEach(function (c) {
       c.questions.forEach(function (q) {
-        var k = q.q.toLowerCase().replace(/[^a-z0-9]/g, "");
+        var k = keyOf(q.q);
+        if (!BY_KEY[k]) BY_KEY[k] = q;
         if (seen[k]) return;
         seen[k] = 1;
-        pool.push(q);
+        POOL.push(q);
       });
     });
-    return pool;
   })();
 
   var FINAL = { COUNT: 150, TIME: 180 * 60, PASS: 70, WARN: 5 * 60 };
@@ -349,6 +371,34 @@
   }
   function finalProg() { var p = loadP(); return p.final || { best: null }; }
   function setFinalProg(upd) { var p = loadP(); p.final = Object.assign({ best: null }, p.final || {}, upd); saveP(p); }
+
+  // ---------- weakness tracking ----------
+  // A "weakness" is a question the user has gotten wrong more often than right.
+  // We store a count keyed by the normalized question text. Wrong answers increment,
+  // correct answers decrement; the question leaves the pool when the count hits 0.
+  function weakAll() { var p = loadP(); return p.weak || {}; }
+  function setWeakAll(w) { var p = loadP(); p.weak = w; saveP(p); }
+  function weakBest() { var p = loadP(); return p.weakBest != null ? p.weakBest : null; }
+  function setWeakBest(v) { var p = loadP(); p.weakBest = v; saveP(p); }
+
+  function bumpWrong(q) {
+    var w = weakAll(), k = keyOf(q.q);
+    w[k] = (w[k] || 0) + 1;
+    setWeakAll(w);
+  }
+  function bumpRight(q) {
+    var w = weakAll(), k = keyOf(q.q);
+    if (!w[k]) return;
+    w[k]--;
+    if (w[k] <= 0) delete w[k];
+    setWeakAll(w);
+  }
+  function weaknessQuestions() {
+    var w = weakAll(), out = [];
+    Object.keys(w).forEach(function (k) { if (BY_KEY[k]) out.push(BY_KEY[k]); });
+    return out;
+  }
+  function weaknessCount() { return Object.keys(weakAll()).length; }
 
   // ---------- elements ----------
   var $ = function (id) { return document.getElementById(id); };
@@ -414,6 +464,20 @@
     var fp = finalProg();
     elFinalBest.innerHTML = fp.best != null ? fp.best + "%" : "&mdash;";
 
+    var weakN = weaknessCount();
+    var weakCard = $("weakness-card");
+    $("weakness-count").textContent = weakN;
+    if (weakN === 0) {
+      $("weakness-title").textContent = "No weaknesses recorded yet";
+      $("weakness-sub").textContent = "Wrong answers from any quiz will appear here for targeted practice.";
+      weakCard.disabled = true;
+    } else {
+      var wb = weakBest();
+      $("weakness-title").textContent = weakN + " question" + (weakN === 1 ? "" : "s") + " · untimed";
+      $("weakness-sub").textContent = "Drawn from your mistakes across all quizzes." + (wb != null ? " Best: " + wb + "%." : "");
+      weakCard.disabled = false;
+    }
+
     var overall = totalQ ? Math.round((totalDone / totalQ) * 100) : 0;
     $("overall-fill").style.width = overall + "%";
     $("overall-label").textContent = overall + "% overall";
@@ -450,6 +514,21 @@
     renderQuestion();
     startTimer();
     window.addEventListener("beforeunload", beforeUnload);
+  }
+
+  function startWeakness() {
+    var qs = weaknessQuestions();
+    if (!qs.length) return;
+    S = {
+      mode: "weakness", title: "Weakness Test",
+      questions: shuffle(qs),
+      idx: 0, correct: 0, answered: 0, answeredNow: false,
+      timed: false, finished: false,
+    };
+    elExit.textContent = "‹ Back";
+    elTimer.classList.add("hidden");
+    show(quizView);
+    renderQuestion();
   }
 
   function startTimer() {
@@ -492,7 +571,8 @@
     S.answeredNow = true; S.answered++;
     var q = S.questions[S.idx];
     var isCorrect = chosen === q.correct;
-    if (isCorrect) S.correct++;
+    if (isCorrect) { S.correct++; bumpRight(q); }
+    else { bumpWrong(q); }
 
     Array.prototype.forEach.call(elOptions.querySelectorAll(".option"), function (btn) {
       btn.disabled = true;
@@ -544,6 +624,8 @@
         completed: S.answered >= total ? true : pr.completed,
         best: S.answered >= total ? Math.max(pr.best || 0, pct) : pr.best,
       });
+    } else if (S.mode === "weakness") {
+      if (S.answered >= total) setWeakBest(Math.max(weakBest() || 0, pct));
     } else {
       var fp = finalProg();
       setFinalProg({ best: Math.max(fp.best || 0, pct), last: pct });
@@ -553,13 +635,17 @@
 
   function renderResults(pct, total, timeUp) {
     var isFinal = S.mode === "final";
+    var isWeak = S.mode === "weakness";
     var pass = pct >= FINAL.PASS;
+    var remainingWeak = weaknessCount();
 
-    $("r-badge").textContent = isFinal ? "Final Exam" : S.title;
-    $("r-title").textContent = isFinal ? "Exam complete" : S.title + " complete";
+    $("r-badge").textContent = isFinal ? "Final Exam" : (isWeak ? "Weakness Test" : S.title);
+    $("r-title").textContent = isFinal ? "Exam complete" : (isWeak ? "Weakness Test complete" : S.title + " complete");
     $("r-sub").textContent = timeUp
       ? "Time's up — you answered " + S.answered + " of " + total + "."
-      : "You scored " + S.correct + " out of " + total + " correct.";
+      : (isWeak
+          ? "You scored " + S.correct + " out of " + total + " correct. " + remainingWeak + " weakness" + (remainingWeak === 1 ? "" : "es") + " left to review."
+          : "You scored " + S.correct + " out of " + total + " correct.");
 
     $("r-pct").textContent = pct + "%";
     var ring = $("r-ring");
@@ -570,18 +656,28 @@
     if (isFinal) {
       verdict.className = "verdict-tag " + (pass ? "pass" : "fail");
       verdict.textContent = pass ? "Passed (≥ 70%)" : "Below passing (70%)";
+    } else if (isWeak && remainingWeak === 0) {
+      verdict.className = "verdict-tag pass";
+      verdict.textContent = "All weaknesses cleared";
     } else {
       verdict.className = "verdict-tag hidden";
     }
 
-    var stats = isFinal
-      ? [[S.correct, "Correct"], [S.answered + " / " + total, "Answered"], [fmtTime(FINAL.TIME - S.remaining), "Time used"]]
-      : [[S.correct, "Correct"], [total - S.correct, "Missed"], [total, "Questions"]];
+    var stats;
+    if (isFinal) {
+      stats = [[S.correct, "Correct"], [S.answered + " / " + total, "Answered"], [fmtTime(FINAL.TIME - S.remaining), "Time used"]];
+    } else if (isWeak) {
+      stats = [[S.correct, "Correct"], [total - S.correct, "Missed"], [remainingWeak, "Still weak"]];
+    } else {
+      stats = [[S.correct, "Correct"], [total - S.correct, "Missed"], [total, "Questions"]];
+    }
     $("r-stats").innerHTML = stats.map(function (s) {
       return '<div class="stat"><span class="stat-num">' + s[0] + '</span><div class="stat-label">' + s[1] + '</div></div>';
     }).join("");
 
-    $("r-retry").textContent = isFinal ? "Retake exam" : "Retry chapter";
+    if (isWeak) $("r-retry").textContent = remainingWeak ? "Retry weakness test" : "Back to menu";
+    else $("r-retry").textContent = isFinal ? "Retake exam" : "Retry chapter";
+    $("r-retry").disabled = isWeak && remainingWeak === 0;
     show(resultsView);
   }
 
@@ -616,9 +712,16 @@
   elNext.addEventListener("click", next);
   elExit.addEventListener("click", exitQuiz);
   $("final-card").addEventListener("click", startFinal);
+  $("weakness-card").addEventListener("click", function () {
+    if (!this.disabled) startWeakness();
+  });
   $("r-home").addEventListener("click", renderHome);
   $("r-retry").addEventListener("click", function () {
     if (S.mode === "final") startFinal();
+    else if (S.mode === "weakness") {
+      if (weaknessCount() > 0) startWeakness();
+      else renderHome();
+    }
     else startChapter(S.chapterIndex);
   });
   $("reset-btn").addEventListener("click", function () {
